@@ -9,3 +9,5 @@ Presenters: include your code as full folders labeled with the teaching topic an
 Mentors: please share this repository with your students and help them setup before the bootcamp
 
 Students: look at the various resources found in this repository and feel free to explore and experiment
+
+Coding Resources:
