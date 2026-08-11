@@ -8,6 +8,7 @@ import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.CANConstants;
 
+/*** In this subsystem example, the subsystem itself doesn't have a state machine. Instead, it contains methods to control the motors in the subsystem. */
 public class Spindexer extends SubsystemBase {
     
     TalonFX spindexerMotor = new TalonFX(CANConstants.spindexerID, CANConstants.canivore);

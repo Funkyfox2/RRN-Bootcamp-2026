@@ -14,6 +14,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.CANConstants;
 import frc.robot.Constants.FieldConstants;
 
+/*** In this subsystem example, only one state machine is present. The handleStateTransition() method is dropped. */
 public class Shooter extends SubsystemBase {
 
     TalonFX shooterMotor = new TalonFX(CANConstants.shooterID, CANConstants.canivore);

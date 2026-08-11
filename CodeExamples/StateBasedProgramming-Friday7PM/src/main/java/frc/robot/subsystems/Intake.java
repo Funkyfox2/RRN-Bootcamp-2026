@@ -10,6 +10,7 @@ import edu.wpi.first.networktables.StringPublisher;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.CANConstants;
 
+/*** In this subsystem, structure is copied almost exactly from Superstructure. */
 public class Intake extends SubsystemBase {
     
     TalonFX intakeRollerMotor = new TalonFX(CANConstants.intakeRollerID, CANConstants.canivore);

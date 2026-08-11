@@ -9,6 +9,8 @@ import frc.robot.RobotContainer;
 import frc.robot.subsystems.Intake.WantedIntakeState;
 import frc.robot.subsystems.Shooter.ShooterState;
 
+
+/*** Commands all subsystems based on it's own state machines. It loops through them periodically. */
 public class Superstructure extends SubsystemBase {
 
     RobotContainer robotContainer;
@@ -99,6 +101,7 @@ public class Superstructure extends SubsystemBase {
         }
     }
 
+    /*** Features some additional logic. Unfortunately, the first statement wouldn't work perfectly in basic simulation, so I've added a check for that. */
     public void staticShoot() {
         shooter.setShooterState(ShooterState.STATIC_SHOOT);
         intake.setWantedIntakeState(WantedIntakeState.STOP);
@@ -109,6 +112,7 @@ public class Superstructure extends SubsystemBase {
         }
     }
 
+    /*** Features some additional logic. Unfortunately, the first statement wouldn't work perfectly in basic simulation, so I've added a check for that. */
     public void distanceShoot() {
         shooter.setShooterState(ShooterState.DISTANCE_SHOOT);
         intake.setWantedIntakeState(WantedIntakeState.STOP);
@@ -126,6 +130,7 @@ public class Superstructure extends SubsystemBase {
         spindexer.stopSpindexer();
     }
 
+    /*** Features some additional logic. Unfortunately, the first statement wouldn't work perfectly in basic simulation, so I've added a check for that. */
     public void pass() {
         shooter.setShooterState(ShooterState.PASS);
         intake.setWantedIntakeState(WantedIntakeState.INTAKE);
