@@ -82,6 +82,8 @@ public class RobotContainer {
 
         // Reset the field-centric heading on left bumper press.
         driver.a().onTrue(drivetrain.runOnce(drivetrain::seedFieldCentric));
+
+        // Superstructure controls
         driver.rightTrigger().onTrue(superstructure.setState(WantedSuperState.DISTANCE_SHOOT)).onFalse(superstructure.setState(WantedSuperState.STOP));
         driver.rightBumper().onTrue(superstructure.setState(WantedSuperState.PASS)).onFalse(superstructure.setState(WantedSuperState.STOP));
         driver.leftTrigger().onTrue(superstructure.setState(WantedSuperState.COLLECT)).onFalse(superstructure.setState(WantedSuperState.STOP));
