@@ -9,13 +9,10 @@ package frc.robot;
 
 import static edu.wpi.first.units.Units.Degrees;
 import static edu.wpi.first.units.Units.Inches;
-import static edu.wpi.first.units.Units.Meters;
 import static edu.wpi.first.units.Units.Milliseconds;
 import static edu.wpi.first.units.Units.RotationsPerSecond;
 
 import com.pathplanner.lib.auto.AutoBuilder;
-import edu.wpi.first.math.MathUtil;
-import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
@@ -200,12 +197,11 @@ public class RobotContainer {
     return Commands.sequence(
         // 1. Go to Height
         Commands.deadline(
-            Commands.waitUntil(
-                () ->
-                    MathUtil.isNear(
-                        elevatorPosition.ElevatorHeight, elevatorSubsytem.getHeightIn(), 10)),
+            Commands.waitUntil(() -> elevatorSubsytem.atPosition(elevatorPosition.ElevatorHeight)),
             // run elevator
-            elevatorSubsytem.run(Inches.of(elevatorPosition.ElevatorHeight)).repeatedly(),
+            elevatorSubsytem
+                .setHeightSetpointCommand(Inches.of(elevatorPosition.ElevatorHeight))
+                .repeatedly(),
             // run aim
             armSubsystem.setAngle(Degrees.of(Constants.SafeAimAngle)).repeatedly()),
 
@@ -214,14 +210,18 @@ public class RobotContainer {
             // run aim
             armSubsystem.setAngle(Degrees.of(elevatorPosition.AimAngle)).repeatedly(),
             // run elevator
-            elevatorSubsytem.run(Inches.of(elevatorPosition.ElevatorHeight)).repeatedly()),
+            elevatorSubsytem
+                .setHeightSetpointCommand(Inches.of(elevatorPosition.ElevatorHeight))
+                .repeatedly()),
 
         // 3. hold
         armSubsystem
             .setAngle(Degrees.of(elevatorPosition.AimAngle))
             .repeatedly()
             .alongWith(
-                elevatorSubsytem.run(Inches.of(elevatorPosition.ElevatorHeight)).repeatedly()));
+                elevatorSubsytem
+                    .setHeightSetpointCommand(Inches.of(elevatorPosition.ElevatorHeight))
+                    .repeatedly()));
   }
 
   /**

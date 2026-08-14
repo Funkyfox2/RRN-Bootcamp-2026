@@ -9,13 +9,10 @@ import static edu.wpi.first.units.Units.Milliseconds;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
-import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants;
-
-import java.lang.Thread.State;
 import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
 
@@ -34,8 +31,8 @@ public class CreshendoExample {
    * CODE WILL NOT WORK IN SIM
    */
 
-   // the Example States
-  public static enum CreshendoExampleStates{
+  // the Example States
+  public static enum CreshendoExampleStates {
     INTAKE,
     SPEAKER,
     AMP,
@@ -53,7 +50,7 @@ public class CreshendoExample {
   DriveSubsytem m_DriveSubsytem = new DriveSubsytem();
 
   /* Example Configure Bindings for Two States: Intake and Speaker */
-  public void CreshendoExampleConfigureBindings(){
+  public void CreshendoExampleConfigureBindings() {
 
     /* set up Controller Triggers */
 
@@ -69,17 +66,21 @@ public class CreshendoExample {
     Trigger isIntake = new Trigger(() -> isState(CreshendoExampleStates.INTAKE));
 
     // action Triggers
-    Trigger IndexerDectsNote = new Trigger( () -> m_IndexerSubsytem.IndexerHasNote() );
+    Trigger IndexerDectsNote = new Trigger(() -> m_IndexerSubsytem.IndexerHasNote());
 
     /* set Default Commands  */
 
     // drive
-    m_DriveSubsytem.setDefaultCommand(m_DriveSubsytem.drive( () -> xboxController.getLeftX(), () -> xboxController.getLeftY(), () -> xboxController.getRightX()));
+    m_DriveSubsytem.setDefaultCommand(
+        m_DriveSubsytem.drive(
+            () -> xboxController.getLeftX(),
+            () -> xboxController.getLeftY(),
+            () -> xboxController.getRightX()));
 
     // set Defualt Intake Command as retract
     m_IntakeSubsytem.setDefaultCommand(m_IntakeSubsytem.UndeployIntake());
 
-    // set Default Indexer Command as Stop 
+    // set Default Indexer Command as Stop
     m_IndexerSubsytem.setDefaultCommand(m_IndexerSubsytem.RunIndexer(() -> 0));
 
     /* set Commands that set Commands */
@@ -90,21 +91,25 @@ public class CreshendoExample {
     /* Intake State */
 
     /*
-     * Intake:  
-     * when we hit "Get Ready to Score Button" Run Intake Sequence, 
+     * Intake:
+     * when we hit "Get Ready to Score Button" Run Intake Sequence,
      * "When Note is Detected by Indexer" Switch to Mode Past Scoring Mode
      */
 
     // deploy, Default Command Brings back
-    isIntake.and(() -> GetScoreReady.getAsBoolean() ).whileTrue( DeployIntake(m_IntakeSubsytem, m_IndexerSubsytem));
+    isIntake
+        .and(() -> GetScoreReady.getAsBoolean())
+        .whileTrue(DeployIntake(m_IntakeSubsytem, m_IndexerSubsytem));
 
     // if our Intake is being Deployed and we dect Not Switch to Previus Scoring Mode
-    isIntake.and(() -> ( GetScoreReady.getAsBoolean() && IndexerDectsNote.getAsBoolean()) ).onTrue(getPreviusScoringState());
+    isIntake
+        .and(() -> (GetScoreReady.getAsBoolean() && IndexerDectsNote.getAsBoolean()))
+        .onTrue(getPreviusScoringState());
 
     /* Shooter State */
 
     /*
-     * Speaker: When Mode Speaker: Check if Note is in Shooter If not shuffle Note to shooter. 
+     * Speaker: When Mode Speaker: Check if Note is in Shooter If not shuffle Note to shooter.
      * when we hit "Get Ready to Score Button" Spin Up Shooter, Aim Shooter, and auto align to the speaker,
      *  " Shoot Button" Check if Shooter is ready to Shoot, Fire Note,
      *  "When Note is Fired" Switch to Mode Intake
@@ -114,88 +119,99 @@ public class CreshendoExample {
     isSpeaker.onTrue(shuffleNote(CreshendoExampleStates.SPEAKER));
 
     // if whe Get score ready Spin up and Auto Rotate
-    isSpeaker.and(() -> GetScoreReady.getAsBoolean() ).whileTrue(
-       SpinUp(m_ShooterSubSytem, m_DriveSubsytem) );
+    isSpeaker
+        .and(() -> GetScoreReady.getAsBoolean())
+        .whileTrue(SpinUp(m_ShooterSubSytem, m_DriveSubsytem));
 
     // when Score Shoot and Contue to aling with speaker, after fire change to intake
-    isSpeaker.and(() -> score.getAsBoolean() ).whileTrue(
-      Fire(m_ShooterSubSytem, m_DriveSubsytem).andThen(setState(CreshendoExampleStates.INTAKE)) );
-
+    isSpeaker
+        .and(() -> score.getAsBoolean())
+        .whileTrue(
+            Fire(m_ShooterSubSytem, m_DriveSubsytem)
+                .andThen(setState(CreshendoExampleStates.INTAKE)));
   }
-
 
   /* spins up shooter while auto alinging */
-  public Command SpinUp(ShooterSubSytem shooterSubSytem, DriveSubsytem drive){
-     return m_ShooterSubSytem.setSpinUpData(ShooterSubSytem.lookUpSpinUpData(() -> m_DriveSubsytem.getDistanceFromSpeaker()))
-       .alongWith(AutoRotateSpeaker(m_DriveSubsytem, () -> xboxController.getLeftX(), () -> xboxController.getLeftY()));
+  public Command SpinUp(ShooterSubSytem shooterSubSytem, DriveSubsytem drive) {
+    return m_ShooterSubSytem
+        .setSpinUpData(
+            ShooterSubSytem.lookUpSpinUpData(() -> m_DriveSubsytem.getDistanceFromSpeaker()))
+        .alongWith(
+            AutoRotateSpeaker(
+                m_DriveSubsytem, () -> xboxController.getLeftX(), () -> xboxController.getLeftY()));
   }
-
 
   /* Wait till shooter spun up then fire */
-  public Command Fire(ShooterSubSytem shooterSubSytem, DriveSubsytem drive){
-    return Commands.deadline(Commands.waitUntil( () -> shooterSubSytem.hasSpunUp()), SpinUp(shooterSubSytem, drive)).andThen(shooterSubSytem.Fire(() -> 6000));
+  public Command Fire(ShooterSubSytem shooterSubSytem, DriveSubsytem drive) {
+    return Commands.deadline(
+            Commands.waitUntil(() -> shooterSubSytem.hasSpunUp()), SpinUp(shooterSubSytem, drive))
+        .andThen(shooterSubSytem.Fire(() -> 6000));
   }
 
-  public boolean isState(CreshendoExampleStates creshendoExampleStates){
+  public boolean isState(CreshendoExampleStates creshendoExampleStates) {
     return states == creshendoExampleStates;
   }
 
-  public Command setState(CreshendoExampleStates creshendoExampleStates){
-        return Commands.runOnce(() -> { states = creshendoExampleStates; });
-
+  public Command setState(CreshendoExampleStates creshendoExampleStates) {
+    return Commands.runOnce(
+        () -> {
+          states = creshendoExampleStates;
+        });
   }
 
-  public Command getPreviusScoringState(){
-    return Commands.runOnce(() -> { states = PreviusScoringState; });
+  public Command getPreviusScoringState() {
+    return Commands.runOnce(
+        () -> {
+          states = PreviusScoringState;
+        });
   }
 
-  public Command setPreviusScoringState(){
-    return Commands.runOnce(() -> { PreviusScoringState = states; });
+  public Command setPreviusScoringState() {
+    return Commands.runOnce(
+        () -> {
+          PreviusScoringState = states;
+        });
   }
 
-  public Command DeployIntake(IntakeSubsytem intakeSubsytem, IndexerSubsytem indexerSubsytem){
+  public Command DeployIntake(IntakeSubsytem intakeSubsytem, IndexerSubsytem indexerSubsytem) {
 
     /*
-     * 
+     *
      * Deploy the angle of the Intake While Running the Indexer and intake motors
-     * 
+     *
      */
 
     return Commands.parallel(
-      intakeSubsytem.DeployIntake(
-        () -> Constants.DeployIntakeExConstants.IntakeRPMRunning),
-      indexerSubsytem.RunIndexer(
-        () -> Constants.DeployIntakeExConstants.IndexerIntakeSpeed));
-
+        intakeSubsytem.DeployIntake(() -> Constants.DeployIntakeExConstants.IntakeRPMRunning),
+        indexerSubsytem.RunIndexer(() -> Constants.DeployIntakeExConstants.IndexerIntakeSpeed));
   }
 
   /* Shuffle Note to Current State */
-  public Command shuffleNote(CreshendoExampleStates state){
+  public Command shuffleNote(CreshendoExampleStates state) {
     /* im to lazy to program this */
     return Commands.none();
   }
 
-    /* AutoRotates to speaker */
-  public Command AutoRotateSpeaker(DriveSubsytem drive, DoubleSupplier x, DoubleSupplier y){
+  /* AutoRotates to speaker */
+  public Command AutoRotateSpeaker(DriveSubsytem drive, DoubleSupplier x, DoubleSupplier y) {
     /* im to lazy to program this */
     return Commands.none();
   }
 
-    public Command RetractIntake(IntakeSubsytem intakeSubsytem, IndexerSubsytem indexerSubsytem){
+  public Command RetractIntake(IntakeSubsytem intakeSubsytem, IndexerSubsytem indexerSubsytem) {
 
     /*
-     * 
+     *
      * Deploy the angle of the Intake While Running the Indexer and intake motors
-     * 
+     *
      */
 
-    return  Commands.parallel(intakeSubsytem.UndeployIntake(), indexerSubsytem.RunIndexer(() -> 0));
-
-
+    return Commands.parallel(intakeSubsytem.UndeployIntake(), indexerSubsytem.RunIndexer(() -> 0));
   }
 
   /** Creates a new DeployIntakeExample. */
-  public Command DeployIntakeExample(IntakeSubsytem intakeSubsytem, IndexerSubsytem indexerSubsytem) {
+  public Command DeployIntakeExample(
+      IntakeSubsytem intakeSubsytem, IndexerSubsytem indexerSubsytem) {
 
     /*
      *
@@ -243,16 +259,14 @@ public class CreshendoExample {
     public Command UndeployIntake() {
       return Commands.none();
     }
-  
   }
 
   public class ShooterSubSytem extends SubsystemBase {
 
     public static class SpinUpData {
-    
+
       Rotation2d AimAngle;
       double FlyWhealSpeed;
-      
     }
 
     /*
@@ -263,11 +277,11 @@ public class CreshendoExample {
     }
 
     /*
-     * 
+     *
      * Runs Flywheals at speed and runs mag rollers
-     * 
+     *
      */
-    public Command Fire(DoubleSupplier magSpeed){
+    public Command Fire(DoubleSupplier magSpeed) {
       return Commands.none();
     }
 
@@ -281,44 +295,43 @@ public class CreshendoExample {
     }
 
     /*
-     * 
+     *
      * Looks up from map the spin up data
-     * 
+     *
      */
-    public static Supplier<SpinUpData> lookUpSpinUpData(DoubleSupplier DistanceFromSpeaker){
+    public static Supplier<SpinUpData> lookUpSpinUpData(DoubleSupplier DistanceFromSpeaker) {
       return () -> new SpinUpData();
     }
   }
 
   public class DriveSubsytem extends SubsystemBase {
-  
+
     /*
      * Gets the Distance From Speaker
      */
 
-    public double getDistanceFromSpeaker(){
+    public double getDistanceFromSpeaker() {
       return 0;
     }
 
     /*
-     * 
+     *
      * auto Aling with drive cablitys
-     * 
+     *
      */
 
-    public Command driveAutoAlingRotate(Rotation2d rotation, DoubleSupplier x, DoubleSupplier y){
+    public Command driveAutoAlingRotate(Rotation2d rotation, DoubleSupplier x, DoubleSupplier y) {
       return Commands.none();
     }
 
     /*
-     * 
+     *
      * drives with x, y
-     * 
+     *
      */
-    public Command drive( DoubleSupplier x, DoubleSupplier y, DoubleSupplier Theta){
+    public Command drive(DoubleSupplier x, DoubleSupplier y, DoubleSupplier Theta) {
       return Commands.none();
     }
-    
   }
 
   public class IndexerSubsytem extends SubsystemBase {

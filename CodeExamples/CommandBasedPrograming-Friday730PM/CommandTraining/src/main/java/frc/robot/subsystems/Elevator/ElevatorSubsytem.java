@@ -14,10 +14,13 @@ import static edu.wpi.first.units.Units.Seconds;
 
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.SparkMax;
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.ElevatorFeedforward;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.units.measure.Distance;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import yams.gearing.GearBox;
 import yams.gearing.MechanismGearing;
@@ -102,8 +105,12 @@ public class ElevatorSubsytem extends SubsystemBase {
     return elevator.runTo(height, tolerance);
   }
 
-  public double getHeightIn() {
-    return elevator.getHeight().in(Inches);
+  public Distance getHeightIn() {
+    return sparkSmartMotorController.getMeasurementPosition();
+  }
+
+  public boolean atPosition(Double DesiredHeight) {
+    return MathUtil.isNear(DesiredHeight.doubleValue(), elevator.getHeight().in(Inches), 10);
   }
 
   /**
@@ -113,6 +120,10 @@ public class ElevatorSubsytem extends SubsystemBase {
    */
   public void setHeightSetpoint(Distance height) {
     elevator.setMeasurementPositionSetpoint(height);
+  }
+
+  public Command setHeightSetpointCommand(Distance height) {
+    return Commands.run(() -> elevator.setMeasurementPositionSetpoint(height), this);
   }
 
   /**
@@ -128,6 +139,7 @@ public class ElevatorSubsytem extends SubsystemBase {
   public void periodic() {
     // This method will be called once per scheduler run
     elevator.updateTelemetry();
+    SmartDashboard.putNumber("ElevatorHeight", getHeightIn().in(Inches));
   }
 
   @Override
