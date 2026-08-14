@@ -97,6 +97,7 @@ public class Shooter extends SubsystemBase {
                 break;
             default:
                 shooterMotor.stopMotor();
+                targetShotSpeed = 0.0;
                 break;
         }
     }
