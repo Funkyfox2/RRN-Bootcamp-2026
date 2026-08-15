@@ -11,3 +11,5 @@ Mentors: please share this repository with your students and help them setup bef
 Students: look at the various resources found in this repository and feel free to explore and experiment
 
 Coding Resources:
+WPILib Class docs: https://github.wpilib.org/allwpilib/docs/release/java/index.html
+WPILib Starting guide: https://docs.wpilib.org/en/stable/docs/zero-to-robot/introduction.html
