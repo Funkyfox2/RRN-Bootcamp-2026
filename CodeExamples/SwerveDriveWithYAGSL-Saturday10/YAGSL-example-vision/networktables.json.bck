@@ -1,0 +1,10 @@
+[
+  {
+    "name": "/Preferences/Shooter RPM",
+    "type": "double",
+    "value": 0.0,
+    "properties": {
+      "persistent": true
+    }
+  }
+]
