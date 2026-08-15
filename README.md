@@ -11,5 +11,11 @@ Mentors: please share this repository with your students and help them setup bef
 Students: look at the various resources found in this repository and feel free to explore and experiment
 
 Coding Resources:
+
 WPILib Class docs: https://github.wpilib.org/allwpilib/docs/release/java/index.html
+
 WPILib Starting guide: https://docs.wpilib.org/en/stable/docs/zero-to-robot/introduction.html
+
+REV motor docs: https://codedocs.revrobotics.com/java/com/revrobotics/package-summary.html
+
+CTRE/Kraken motor docs: https://api.ctr-electronics.com/phoenix6/latest/java/com/ctre/phoenix6/package-summary.html
