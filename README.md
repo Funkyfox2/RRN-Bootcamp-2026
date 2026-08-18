@@ -18,4 +18,12 @@ WPILib Starting guide: https://docs.wpilib.org/en/stable/docs/zero-to-robot/intr
 
 REV motor docs: https://codedocs.revrobotics.com/java/com/revrobotics/package-summary.html
 
+REV Hardware Client (used for tuning and setting motor CAN IDs): https://docs.revrobotics.com/rev-hardware-client-2
+
 CTRE/Kraken motor docs: https://api.ctr-electronics.com/phoenix6/latest/java/com/ctre/phoenix6/package-summary.html
+
+Phoenix Tuner (like REV hardware client but for CTRE, also can setup swerve): https://v6.docs.ctr-electronics.com/en/stable/docs/tuner/index.html
+
+PID Control Explainer Session: https://www.youtube.com/watch?v=ivj1022UIJk
+
+
