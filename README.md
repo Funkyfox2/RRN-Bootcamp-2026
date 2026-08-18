@@ -12,6 +12,8 @@ Students: look at the various resources found in this repository and feel free t
 
 Coding Resources:
 
+Recordings of Bootcamp Sessions: https://www.youtube.com/playlist?list=PLO8iik3NPcPQ
+
 WPILib Class docs: https://github.wpilib.org/allwpilib/docs/release/java/index.html
 
 WPILib Starting guide: https://docs.wpilib.org/en/stable/docs/zero-to-robot/introduction.html
